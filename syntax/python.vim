@@ -21,16 +21,35 @@ call pymode#Default('g:pymode_syntax_all', 1)
     syn keyword pythonStatement	break continue del
     syn keyword pythonStatement	exec return
     syn keyword pythonStatement	pass raise
-    syn keyword pythonStatement	global assert
+    syn keyword pythonStatement	global nonlocal assert
     syn keyword pythonStatement	lambda yield
     syn keyword pythonStatement	with as
-    syn keyword pythonStatement	def class nextgroup=pythonFunction skipwhite
-    syn match   pythonFunction	"[a-zA-Z_][a-zA-Z0-9_]*" display contained
+	syn keyword pythonStatement	object type str basestring unicode buffer bytearray bytes chr unichr
+	syn keyword pythonStatement	dict int long bool float complex set frozenset list tuple
+	
+	syn keyword pythonSelf  	self cls
+	
+    syn keyword pythonStatement	def nextgroup=pythonFunction skipwhite
+    " syn match   pythonFunction	"[a-zA-Z_][a-zA-Z0-9_]*" display contained
+	syn match pythonFunction "\%(\%(def\s\|class\s\|@\)\s*\)\@<=\h\%(\w\|\.\)*" contained nextgroup=pythonVars
+	syn region pythonVars start="(" end=")" contained contains=pythonParameters transparent keepend
+	syn match pythonParameters "[^,\*]*" contained contains=pythonParam,pythonBrackets skipwhite
+	syn match pythonParam "=[^,]*" contained contains=pythonExtraOperator,pythonBuiltin,pythonBuiltinObj,pythonConstant,pythonStatement,pythonNumber,pythonString skipwhite
+	syn match pythonBrackets "[(|)]" contained skipwhite
+	
+	syn keyword pythonStatement	class nextgroup=pythonClass skipwhite
+	syn match pythonClass "\%(\%(def\s\|class\s\|@\)\s*\)\@<=\h\%(\w\|\.\)*" contained nextgroup=pythonClassVars
+	syn region pythonClassVars start="(" end=")" contained contains=pythonClassParameters transparent keepend
+	syn match pythonClassParameters "[^,\*]*" contained contains=pythonBuiltin,pythonBuiltinObj,pythonStatement,pythonBrackets skipwhite
+	
     syn keyword pythonRepeat	for while
     syn keyword pythonConditional	if elif else
     syn keyword pythonInclude	import from
     syn keyword pythonException	try except finally
     syn keyword pythonOperator	and in is not or
+	
+	syn match pythonExtraOperator "\%([~!^&|*/%+-]\|\%(class\s*\)\@<!<<\|<=>\|<=\|\%(<\|\<class\s\+\u\w*\s*\)\@<!<[^<]\@=\|===\|==\|=\~\|>>\|>=\|=\@<!>\|\*\*\|\.\.\.\|\.\.\|::\|=\)"
+	syn match pythonExtraPseudoOperator "\%(-=\|/=\|\*\*=\|\*=\|&&=\|&=\|&&\|||=\||=\|||\|%=\|+=\|!\~\|!=\)"
 
     if !pymode#Default("g:pymode_syntax_print_as_function", 0) || !g:pymode_syntax_print_as_function
         syn keyword pythonStatement print
@@ -176,26 +195,19 @@ call pymode#Default('g:pymode_syntax_all', 1)
     if !pymode#Default('g:pymode_syntax_builtin_objs', g:pymode_syntax_all) || g:pymode_syntax_builtin_objs
         syn keyword pythonBuiltinObj True False Ellipsis None NotImplemented
         syn keyword pythonBuiltinObj __debug__ __doc__ __file__ __name__ __package__
-        syn keyword pythonBuiltinObj self
     endif
 
     " Builtin functions
     if !pymode#Default('g:pymode_syntax_builtin_funcs', g:pymode_syntax_all) || g:pymode_syntax_builtin_funcs
         syn keyword pythonBuiltinFunc	__import__ abs all any apply
-        syn keyword pythonBuiltinFunc	basestring bin bool buffer bytearray bytes callable
-        syn keyword pythonBuiltinFunc	chr classmethod cmp coerce compile complex
-        syn keyword pythonBuiltinFunc	delattr dict dir divmod enumerate eval
-        syn keyword pythonBuiltinFunc	execfile file filter float format frozenset getattr
-        syn keyword pythonBuiltinFunc	globals hasattr hash help hex id
-        syn keyword pythonBuiltinFunc	input int intern isinstance
-        syn keyword pythonBuiltinFunc	issubclass iter len list locals long map max
-        syn keyword pythonBuiltinFunc	min next object oct open ord
-        syn keyword pythonBuiltinFunc	pow property range
-        syn keyword pythonBuiltinFunc	raw_input reduce reload repr
-        syn keyword pythonBuiltinFunc	reversed round set setattr
-        syn keyword pythonBuiltinFunc	slice sorted staticmethod str sum super tuple
-        syn keyword pythonBuiltinFunc	type unichr unicode vars xrange zip
-
+        syn keyword pythonBuiltinFunc	bin callable classmethod cmp coerce compile
+        syn keyword pythonBuiltinFunc	delattr dir divmod enumerate eval execfile file filter
+        syn keyword pythonBuiltinFunc	format getattr globals locals hasattr hash help hex id
+        syn keyword pythonBuiltinFunc	input intern isinstance issubclass iter len locals map max
+		syn keyword pythonBuiltinFunc	min next oct open ord pow property range xrange
+		syn keyword pythonBuiltinFunc	raw_input reduce reload repr reversed round setattr
+		syn keyword pythonBuiltinFunc	slice sorted staticmethod sum super unicode vars zip
+		
         if pymode#Default('g:pymode_syntax_print_as_function', 0) && g:pymode_syntax_print_as_function
             syn keyword pythonBuiltinFunc	print
         endif
@@ -244,10 +256,19 @@ endif
     hi def link  pythonStatement    Statement
     hi def link  pythonInclude      Include
     hi def link  pythonFunction	    Function
+    hi def link  pythonClass	    Function
+	hi def link  pythonParameters   Normal
+	hi def link  pythonParam        Normal
+	hi def link  pythonBrackets     Normal
+	hi def link  pythonClassParameters Normal
+	hi def link  pythonSelf   		Identifier
+	
     hi def link  pythonConditional  Conditional
     hi def link  pythonRepeat       Repeat
     hi def link  pythonException    Exception
     hi def link  pythonOperator	    Operator
+	hi def link  pythonExtraOperator	    Operator
+	hi def link  pythonExtraPseudoOperator  Operator
 
     hi def link  pythonDecorator    Define
     hi def link  pythonDottedName   Function
@@ -291,7 +312,7 @@ endif
     hi def link  pythonBinError	    Error
 
     hi def link  pythonBuiltinObj   Structure
-    hi def link  pythonBuiltinFunc  Function
+    hi def link  pythonBuiltinFunc  Identifier
 
     hi def link  pythonExClass	    Structure
 
