@@ -419,14 +419,14 @@ Rope completion is very slow
 ----------------------------
 
 To work rope_ creates a service directory: ``.ropeproject``.
-If ``g:pymode_rope_guess_project`` set (by default) and ``.ropeproject`` in current dir not found, rope scan ``.ropeproject`` on every dir in parent path.
-If rope finded ``.ropeproject`` in parent dirs, rope set project for all child dir and scan may be slow for many dirs and files.
+If ``g:pymode_rope_guess_project`` set (by default) and ``.ropeproject`` is not found in the current dir, rope scans for ``.ropeproject`` on every parent dir the current path.
+If rope finds ``.ropeproject`` in a parent dir, rope sets the project for all child dirs and scanning may be slow if there are many dirs and files.
 
 Solutions:
 
-- Disable ``g:pymode_rope_guess_project`` to make rope always create ``.ropeproject`` in current dir.
-- Delete ``.ropeproject`` from dip parent dir to make rope create ``.ropeproject`` in current dir.
-- Press ``<C-x>po`` or ``:RopeOpenProject`` to make force rope create ``.ropeproject`` in current dir.
+- Disable ``g:pymode_rope_guess_project`` so rope will create ``.ropeproject`` in the current dir.
+- Delete ``.ropeproject`` from all parent dirs so rope will create ``.ropeproject`` in the current dir.
+- Press ``<C-x>po`` or ``:RopeOpenProject`` to explicitly create ``.ropeproject`` in the current dir.
 
 
 
